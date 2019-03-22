@@ -37,5 +37,4 @@ public class UserTO implements IBaseTO<Long> {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
 }

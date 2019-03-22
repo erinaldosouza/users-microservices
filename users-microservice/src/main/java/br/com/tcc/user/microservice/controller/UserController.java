@@ -1,6 +1,7 @@
 package br.com.tcc.user.microservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.netflix.discovery.EurekaClient;
+
 import br.com.tcc.user.microservice.business.UserService;
 import br.com.tcc.user.microservice.to.impl.UserTO;
 
@@ -19,11 +22,16 @@ import br.com.tcc.user.microservice.to.impl.UserTO;
 @RequestMapping("user")
 public class UserController {
 	
-	private UserService<UserTO> userService;
+	private UserService<UserTO> userService;	
+	private EurekaClient eurekaClient;
+	
+	@Value("${spring.application.name}")
+	private String appName;
 	
 	@Autowired
-	public UserController(UserService<UserTO> userService) {
+	public UserController(UserService<UserTO> userService, EurekaClient eurekaClient) {
 		this.userService = userService;
+		this.eurekaClient = eurekaClient;
 	}
 	
 	@PostMapping(value="save", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -42,7 +50,8 @@ public class UserController {
 	@GetMapping(value="all", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void findAll() {
 		System.out.println("Get request to find all");
-		this.userService.findAll();
+		 eurekaClient.getApplication(this.appName).getName();
+		 this.userService.findAll();
 	}
 	
 	@PutMapping(value="{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
