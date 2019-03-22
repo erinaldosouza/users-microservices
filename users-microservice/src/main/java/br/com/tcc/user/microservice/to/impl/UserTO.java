@@ -4,6 +4,8 @@ import br.com.tcc.user.microservice.to.IBaseTO;
 
 public class UserTO implements IBaseTO<Long> {
 	
+	private static final long serialVersionUID = 139399624282336753L;
+
 	private Long id;
 	
 	private String login;
