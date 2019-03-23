@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,7 +61,7 @@ public class UserController {
 
 		 HttpEntity<String> entity = new HttpEntity<>("parameters", httpHeaders);
 	
-		 new RestTemplate().getForObject("http://127.0.0.1:52587/" + instance.getAppName().toLowerCase() +"/", Void.class,  entity);
+		// TODO validate integration with another service new RestTemplate(). exchange(instance.getHomePageUrl() + instance.getAppName().toLowerCase() +"/1",  HttpMethod.GET,  entity, String.class);
 		 this.userService.findAll();
 	}
 	
