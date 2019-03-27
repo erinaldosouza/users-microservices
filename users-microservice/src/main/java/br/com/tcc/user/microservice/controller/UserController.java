@@ -1,11 +1,11 @@
 package br.com.tcc.user.microservice.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,10 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.EurekaClient;
 
 import br.com.tcc.user.microservice.business.UserService;
 import br.com.tcc.user.microservice.to.impl.UserTO;
@@ -26,15 +22,13 @@ import br.com.tcc.user.microservice.to.impl.UserTO;
 public class UserController {
 	
 	private final UserService<UserTO> userService;	
-	private final EurekaClient eurekaClient;
 	
 	@Value("${spring.application.name}")
 	private String appName;
 	
 	@Autowired
-	public UserController(UserService<UserTO> userService, EurekaClient eurekaClient) {
+	public UserController(UserService<UserTO> userService) {
 		this.userService = userService;
-		this.eurekaClient = eurekaClient;
 	}
 	
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -46,23 +40,12 @@ public class UserController {
 	@GetMapping(value="{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void find(@PathVariable(value="id", required=true) Long id) {
 		System.out.println("Get request to id: " + id);
-
 		this.userService.find(id);
     }
 	
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void findAll() {
-		System.out.println("Get request to find all");
-
-		 InstanceInfo instance = eurekaClient.getNextServerFromEureka(this.appName, false);
-		 
-		 HttpHeaders httpHeaders = new HttpHeaders();
-		 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-		 HttpEntity<String> entity = new HttpEntity<>("parameters", httpHeaders);
-	
-		// TODO validate integration with another service new RestTemplate(). exchange(instance.getHomePageUrl() + instance.getAppName().toLowerCase() +"/1",  HttpMethod.GET,  entity, String.class);
-		 this.userService.findAll();
+	public ResponseEntity<List<UserTO>> findAll() {
+		 return this.userService.findAll();
 	}
 	
 	@PutMapping(value="{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
