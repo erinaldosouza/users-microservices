@@ -1,4 +1,4 @@
-package br.com.springboot.microsservice.springbootmicrosservice01;
+package br.com.tcc.user.microservice;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 //@RunWith(SpringRunner.class)
 //@SpringBootTest
-public class SpringbootMicrosservice01ApplicationTests {
+public class SpringbootUserMicroserviceApplicationTests {
 
 //	@Test
 //	public void contextLoads() {
