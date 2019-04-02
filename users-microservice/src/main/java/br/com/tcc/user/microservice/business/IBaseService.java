@@ -1,20 +1,18 @@
 package br.com.tcc.user.microservice.business;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import br.com.tcc.user.microservice.to.IBaseTO;
+public interface IBaseService<T, E>  {
 
-public interface IBaseService<T extends IBaseTO<? extends Serializable >>  {
+	ResponseEntity<T> save (E t);
 
-	ResponseEntity<T> save (T t);
-
-	T find (Serializable id);
-	ResponseEntity<List<T>> findAll();
-
-	T update (T t);	
+	ResponseEntity<T> find (Serializable id);
 	
-	void delete (Serializable id);	
+	ResponseEntity<T> findAll();
+
+	ResponseEntity<T> update (E t);	
+	
+	ResponseEntity<T> delete (Serializable id);	
 }
