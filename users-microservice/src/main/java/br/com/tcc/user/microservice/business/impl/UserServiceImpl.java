@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
 			errorCode = Integer.valueOf(exception.getMessage().replaceAll("\\D", ""));
 		
 		} catch (Exception e) {
-			// nobody helpfull to print herer e.printStackTrace();
+			// nothing helpfull to print herer e.printStackTrace();
 		}
 		
 		return ResponseEntity.status(errorCode).body(wrapper);
