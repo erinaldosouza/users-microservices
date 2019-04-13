@@ -1,73 +1,103 @@
 package br.com.tcc.user.microservice.business.impl;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
+import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import br.com.tcc.user.microservice.business.UserService;
+import br.com.tcc.user.microservice.helper.RequestHelper;
 import br.com.tcc.user.microservice.to.impl.UserTO;
+import br.com.tcc.user.microservice.wrapper.UserWrapper;
 
 @Component
-public class UserServiceImpl implements UserService<UserTO> {
+@DefaultProperties(defaultFallback="fallback")
+public class UserServiceImpl implements UserService {
 
 	@Value("${application.user.persistence.service}")
 	private String userPersistenceService;
-	
+		
 	private final EurekaClient eurekaClient;
+		
+	private final RequestHelper<UserWrapper> requestHelper;
 	
 	@Autowired
-	public UserServiceImpl (EurekaClient eurekaClient) {
+	public UserServiceImpl (EurekaClient eurekaClient, RequestHelper<UserWrapper> requestHelper) {
 		this.eurekaClient = eurekaClient;
+		this.requestHelper = requestHelper;
 	}
 	
 	@Override
-	public ResponseEntity<UserTO> save(UserTO t) {		
-		return null;
-	}
-
-	@Override
-	public UserTO find(Serializable t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ResponseEntity<List<UserTO>> findAll() {
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-       
-		HttpEntity<String> entity = new HttpEntity<>("parameters", httpHeaders);
+	@HystrixCommand
+	public ResponseEntity<UserWrapper> save(UserTO userTO) {	
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		ResponseEntity<List<UserTO>> response =
-				                     restTemplate
-				                     .exchange(instanceInfo.getHomePageUrl(),  
-				                                HttpMethod.GET,  entity, new ParameterizedTypeReference<List<UserTO>>(){});
-		return response;
+		return requestHelper.doPost(instanceInfo.getHomePageUrl(), userTO);		
 	}
 
 	@Override
-	public UserTO update(UserTO t) {
-		// TODO Auto-generated method stub
-		return null;
+	@HystrixCommand
+	public ResponseEntity<UserWrapper> find(Serializable id) {
+		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
+		return requestHelper.doGet(instanceInfo.getHomePageUrl() + id);		
 	}
 
 	@Override
-	public void delete(Serializable id) {
-		// TODO Auto-generated method stub
+	@HystrixCommand
+	(commandProperties = {
+		@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "60000")
+	})
+	public ResponseEntity<UserWrapper> findAll() {
+		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
+		return requestHelper.doGet(instanceInfo.getHomePageUrl());		
 	}
 
+	@Override
+	@HystrixCommand
+	public ResponseEntity<UserWrapper> update(UserTO userTO) {
+		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
+		return requestHelper.doPut(instanceInfo.getHomePageUrl(), userTO);
+	}
+
+	@Override
+	@HystrixCommand
+	public ResponseEntity<UserWrapper> delete(Serializable id) {
+		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
+		return requestHelper.doDelete(instanceInfo.getHomePageUrl() + id);		
+	}
+	
+	public ResponseEntity<UserWrapper> fallback(Throwable exception) {
+		
+		exception.printStackTrace();
+		UserWrapper wrapper = new UserWrapper();
+		
+		wrapper.setMessage("It wasn't possible to execute your request. Please, try again soon.");
+		StringBuilder error = new StringBuilder();
+		
+		for(Throwable e : exception.getSuppressed()) {
+			error.append(e.getMessage()).append("\\n");
+		}
+		
+		error.append(exception.toString());
+		wrapper.setError(error.toString());
+		
+		int errorCode = 500;
+		
+		try {
+		
+			errorCode = Integer.valueOf(exception.getMessage().replaceAll("\\D", ""));
+		
+		} catch (Exception e) {
+			// nothing helpfull to print herer e.printStackTrace();
+		}
+		
+		return ResponseEntity.status(errorCode).body(wrapper);
+	}
 }

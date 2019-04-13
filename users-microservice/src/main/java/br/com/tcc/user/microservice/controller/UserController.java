@@ -1,7 +1,5 @@
 package br.com.tcc.user.microservice.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -16,18 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.tcc.user.microservice.business.UserService;
 import br.com.tcc.user.microservice.to.impl.UserTO;
+import br.com.tcc.user.microservice.wrapper.UserWrapper;
 
 //TODO change the System.out.println for a logger;
 @RestController
 public class UserController {
 	
-	private final UserService<UserTO> userService;	
+	private final UserService userService;	
 	
 	@Value("${spring.application.name}")
 	private String appName;
 	
 	@Autowired
-	public UserController(UserService<UserTO> userService) {
+	public UserController(UserService userService) {
 		this.userService = userService;
 	}
 	
@@ -38,13 +37,13 @@ public class UserController {
 	}
 	
 	@GetMapping(value="{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void find(@PathVariable(value="id", required=true) Long id) {
+	public ResponseEntity<UserWrapper> find(@PathVariable(value="id", required=true) Long id) {
 		System.out.println("Get request to id: " + id);
-		this.userService.find(id);
+		return this.userService.find(id);
     }
 	
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<UserTO>> findAll() {
+	public ResponseEntity<UserWrapper> findAll() {
 		 return this.userService.findAll();
 	}
 	
@@ -60,5 +59,4 @@ public class UserController {
 		System.out.println("Detele request with id: " + id);
 		this.userService.delete(id);
 	}
-
 }
