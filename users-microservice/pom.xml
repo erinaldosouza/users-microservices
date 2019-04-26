@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	
-	<groupId>br.com.user.microsservice</groupId>
-	<artifactId>user-microsservice</artifactId>
+	<groupId>br.com.tcc</groupId>
+	<artifactId>user-microservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>user-microsservice</name>
 	<description>Demo project for Spring Boot</description>
