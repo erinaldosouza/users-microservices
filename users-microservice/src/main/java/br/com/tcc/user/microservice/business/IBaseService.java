@@ -6,13 +6,13 @@ import org.springframework.http.ResponseEntity;
 
 public interface IBaseService<T, E>  {
 
-	ResponseEntity<T> save (E t);
+	ResponseEntity<T> save (E e);
 
 	ResponseEntity<T> find (Serializable id);
 	
 	ResponseEntity<T> findAll();
 
-	ResponseEntity<T> update (E t);	
+	ResponseEntity<T> update (E e);	
 	
 	ResponseEntity<T> delete (Serializable id);	
 }

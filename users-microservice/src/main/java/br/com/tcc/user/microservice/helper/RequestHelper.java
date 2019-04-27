@@ -10,8 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import br.com.tcc.user.microservice.wrapper.UserWrapper;
+
 @Component
-public class RequestHelper<T> {
+public class RequestHelper {
 	
 	private final RestTemplate restTemplate;
 	
@@ -30,27 +32,27 @@ public class RequestHelper<T> {
 		return entity;
 	}
 	
-	private ResponseEntity<T> doRequestDefault(String url, HttpMethod method, Object... body) {
+	private ResponseEntity<UserWrapper> doRequestDefault(String url, HttpMethod method, Object... body) {
 		HttpEntity<String> entity = this.getDefaultJsonHeaders();		
-		ResponseEntity<T> response = restTemplate
-				                     .exchange(url, method, entity, new ParameterizedTypeReference<T>(){});
+		ResponseEntity<UserWrapper> response = restTemplate
+				                     .exchange(url, method, entity, new ParameterizedTypeReference<UserWrapper>(){});
 		return response;
 		
 	}
 	
-	public ResponseEntity<T> doGet(String url) {
+	public ResponseEntity<UserWrapper> doGet(String url) {
 		return this.doRequestDefault(url, HttpMethod.GET);		
 	}
 	
-	public ResponseEntity<T> doPost(String url, Object body) {
+	public ResponseEntity<UserWrapper> doPost(String url, Object... body) {
 		return this.doRequestDefault(url, HttpMethod.POST, body);
 	}
 	
-	public ResponseEntity<T>  doPut(String url, Object body) {
+	public ResponseEntity<UserWrapper>  doPut(String url, Object... body) {
 		return this.doRequestDefault(url, HttpMethod.PUT, body);
 	}
 		
-	public ResponseEntity<T> doDelete(String url) {
+	public ResponseEntity<UserWrapper> doDelete(String url) {
 		return this.doRequestDefault(url, HttpMethod.DELETE);
 	}
 }

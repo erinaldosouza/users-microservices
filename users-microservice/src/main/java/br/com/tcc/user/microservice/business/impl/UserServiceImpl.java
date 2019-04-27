@@ -27,10 +27,10 @@ public class UserServiceImpl implements UserService {
 		
 	private final EurekaClient eurekaClient;
 		
-	private final RequestHelper<UserWrapper> requestHelper;
+	private final RequestHelper requestHelper;
 	
 	@Autowired
-	public UserServiceImpl (EurekaClient eurekaClient, RequestHelper<UserWrapper> requestHelper) {
+	public UserServiceImpl (EurekaClient eurekaClient, RequestHelper requestHelper) {
 		this.eurekaClient = eurekaClient;
 		this.requestHelper = requestHelper;
 	}
