@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
@@ -18,7 +18,7 @@ import br.com.tcc.user.microservice.helper.RequestHelper;
 import br.com.tcc.user.microservice.to.impl.UserTO;
 import br.com.tcc.user.microservice.wrapper.UserWrapper;
 
-@Component
+@Service
 @DefaultProperties(defaultFallback="fallback")
 public class UserServiceImpl implements UserService {
 
