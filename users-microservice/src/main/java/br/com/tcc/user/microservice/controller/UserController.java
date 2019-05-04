@@ -30,31 +30,31 @@ public class UserController {
 		this.userService = userService;
 	}
 	
-	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value="/", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void save(@RequestBody UserTO user) {
 		System.out.println("Post request to /save: " + user);
 		this.userService.save(user);		
 	}
 	
-	@GetMapping(value="{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<UserWrapper> find(@PathVariable(value="id", required=true) Long id) {
 		System.out.println("Get request to id: " + id);
 		return this.userService.find(id);
     }
 	
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value="/", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<UserWrapper> findAll() {
 		 return this.userService.findAll();
 	}
 	
-	@PutMapping(value="{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void update(@PathVariable(value="id", required=true) Long id, @RequestBody(required=true) UserTO user) {
 		System.out.println("Put request with id: " + id + " and body: " + user);
 		user.setId(id);
 		this.userService.update(user);
 	} 
 	
-	@DeleteMapping(value="{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
+	@DeleteMapping(value="/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes=MediaType.APPLICATION_JSON_VALUE)
 	public void delete(@PathVariable(value="id", required=true) Long id) {
 		System.out.println("Detele request with id: " + id);
 		this.userService.delete(id);
