@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import br.com.tcc.user.microservice.to.impl.UserTO;
+import br.com.tcc.user.microservice.model.impl.User;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_EMPTY)	
@@ -15,22 +15,22 @@ public class UserWrapper implements Serializable {
 
 	private static final long serialVersionUID = -4887772344155987297L;
 	
-	private UserTO user;
-	private List<UserTO> users;
+	private User user;
+	private List<User> users;
 	
 	private String error;
 	private String message;
 
-	public UserTO getUser() {
+	public User getUser() {
 		return user;
 	}
-	public void setUser(UserTO user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
-	public List<UserTO> getUsers() {
+	public List<User> getUsers() {
 		return users;
 	}
-	public void setUsers(List<UserTO> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 	public String getMessage() {

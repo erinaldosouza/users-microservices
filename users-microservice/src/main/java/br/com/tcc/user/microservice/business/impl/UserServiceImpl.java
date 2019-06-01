@@ -14,8 +14,8 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import br.com.tcc.user.microservice.business.UserService;
-import br.com.tcc.user.microservice.helper.RequestHelper;
-import br.com.tcc.user.microservice.to.impl.UserTO;
+import br.com.tcc.user.microservice.helper.IRequestHelper;
+import br.com.tcc.user.microservice.model.impl.User;
 import br.com.tcc.user.microservice.wrapper.UserWrapper;
 
 @Service
@@ -27,19 +27,19 @@ public class UserServiceImpl implements UserService {
 		
 	private final EurekaClient eurekaClient;
 		
-	private final RequestHelper requestHelper;
+	private final IRequestHelper<UserWrapper, User> requestHelper;
 	
 	@Autowired
-	public UserServiceImpl (EurekaClient eurekaClient, RequestHelper requestHelper) {
+	public UserServiceImpl (EurekaClient eurekaClient, IRequestHelper<UserWrapper, User> requestHelper) {
 		this.eurekaClient = eurekaClient;
 		this.requestHelper = requestHelper;
 	}
 	
 	@Override
 	@HystrixCommand
-	public ResponseEntity<UserWrapper> save(UserTO userTO) {	
+	public ResponseEntity<UserWrapper> save(User user) {	
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doPost(instanceInfo.getHomePageUrl(), userTO);		
+		return requestHelper.doPost(instanceInfo.getHomePageUrl(), user);		
 	}
 
 	@Override
@@ -56,14 +56,14 @@ public class UserServiceImpl implements UserService {
 	})
 	public ResponseEntity<UserWrapper> findAll() {
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doGet(instanceInfo.getHomePageUrl());		
+		return requestHelper.doGet(instanceInfo.getHomePageUrl());
 	}
 
 	@Override
 	@HystrixCommand
-	public ResponseEntity<UserWrapper> update(UserTO userTO) {
+	public ResponseEntity<UserWrapper> update(User user) {
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doPut(instanceInfo.getHomePageUrl(), userTO);
+		return requestHelper.doPut(instanceInfo.getHomePageUrl(), user);
 	}
 
 	@Override

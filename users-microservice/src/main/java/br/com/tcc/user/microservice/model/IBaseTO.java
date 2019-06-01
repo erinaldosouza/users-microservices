@@ -1,4 +1,4 @@
-package br.com.tcc.user.microservice.to;
+package br.com.tcc.user.microservice.model;
 
 import java.io.Serializable;
 
