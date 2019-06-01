@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
 		Map<String, Object> userMap = getUserDataMap(user);
 		Map<String, String> headersMap = getDefaultHeaders(instanceInfo);
 		
-		return requestHelper.doPut(instanceInfo.getHomePageUrl(), userMap, headersMap);
+		return requestHelper.doPut(instanceInfo.getHomePageUrl() + user.getId(), userMap, headersMap);
 	}
 
 	@Override
