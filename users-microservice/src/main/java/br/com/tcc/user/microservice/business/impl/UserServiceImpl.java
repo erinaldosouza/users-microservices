@@ -1,6 +1,8 @@
 package br.com.tcc.user.microservice.business.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,10 +29,10 @@ public class UserServiceImpl implements UserService {
 		
 	private final EurekaClient eurekaClient;
 		
-	private final IRequestHelper<UserWrapper, User> requestHelper;
+	private final IRequestHelper<UserWrapper> requestHelper;
 	
 	@Autowired
-	public UserServiceImpl (EurekaClient eurekaClient, IRequestHelper<UserWrapper, User> requestHelper) {
+	public UserServiceImpl (EurekaClient eurekaClient, IRequestHelper<UserWrapper> requestHelper) {
 		this.eurekaClient = eurekaClient;
 		this.requestHelper = requestHelper;
 	}
@@ -39,14 +41,19 @@ public class UserServiceImpl implements UserService {
 	@HystrixCommand
 	public ResponseEntity<UserWrapper> save(User user) {	
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doPost(instanceInfo.getHomePageUrl(), user);		
+		
+		Map<String, Object> userMap = getUserDataMap(user);
+		Map<String, String> headersMap = getDefaultHeaders(instanceInfo);
+		
+		return requestHelper.doPost(instanceInfo.getHomePageUrl(), userMap, headersMap);		
 	}
 
 	@Override
 	@HystrixCommand
 	public ResponseEntity<UserWrapper> find(Serializable id) {
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doGet(instanceInfo.getHomePageUrl() + id);		
+		Map<String, String> headersMap = getDefaultHeaders(instanceInfo);
+		return requestHelper.doGet(instanceInfo.getHomePageUrl() + id, headersMap);		
 	}
 
 	@Override
@@ -56,21 +63,27 @@ public class UserServiceImpl implements UserService {
 	})
 	public ResponseEntity<UserWrapper> findAll() {
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doGet(instanceInfo.getHomePageUrl());
+		Map<String, String> headersMap = getDefaultHeaders(instanceInfo);
+		return requestHelper.doGet(instanceInfo.getHomePageUrl(), headersMap);
 	}
 
 	@Override
 	@HystrixCommand
 	public ResponseEntity<UserWrapper> update(User user) {
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doPut(instanceInfo.getHomePageUrl(), user);
+		
+		Map<String, Object> userMap = getUserDataMap(user);
+		Map<String, String> headersMap = getDefaultHeaders(instanceInfo);
+		
+		return requestHelper.doPut(instanceInfo.getHomePageUrl(), userMap, headersMap);
 	}
 
 	@Override
 	@HystrixCommand
 	public ResponseEntity<UserWrapper> delete(Serializable id) {
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doDelete(instanceInfo.getHomePageUrl() + id);		
+		Map<String, String> headersMap = getDefaultHeaders(instanceInfo);
+		return requestHelper.doDelete(instanceInfo.getHomePageUrl() + id, headersMap);		
 	}
 	
 	public ResponseEntity<UserWrapper> fallback(Throwable exception) {
@@ -99,5 +112,28 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		return ResponseEntity.status(errorCode).body(wrapper);
+	}
+	
+	private Map<String, String> getDefaultHeaders(InstanceInfo instanceInfo) {
+		Map<String, String> headersMap = new HashMap<>();
+		headersMap.put("api-key", instanceInfo.getMetadata().get("api-key"));
+		return headersMap;
+	}
+	
+	
+	private Map<String, Object> getUserDataMap(User user) {
+		
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("login", user.getLogin());
+		map.put("password", user.getPassword());
+
+		try {
+			map.put("photo",  user.getPhoto().getResource());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return map;
 	}
 }

@@ -22,7 +22,11 @@ public class User implements IBaseTO<Long> {
 	@NotBlank
 	private String password;
 	
+	private String idPhoto;
+	
 	private MultipartFile photo;
+	
+	private String base64Photo;
 
 	@Override
 	public Long getId() {
@@ -56,5 +60,21 @@ public class User implements IBaseTO<Long> {
 
 	public void setPhoto(MultipartFile photo) {
 		this.photo = photo;
+	}
+
+	public String getIdPhoto() {
+		return idPhoto;
+	}
+
+	public void setIdPhoto(String idPhoto) {
+		this.idPhoto = idPhoto;
+	}
+
+	public String getBase64Photo() {
+		return base64Photo;
+	}
+
+	public void setBase64Photo(String base64Photo) {
+		this.base64Photo = base64Photo;
 	}
 }
