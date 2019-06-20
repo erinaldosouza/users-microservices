@@ -16,11 +16,25 @@ public class UserWrapper implements Serializable {
 	private static final long serialVersionUID = -4887772344155987297L;
 	
 	private User user;
+	private Long userId;
 	private List<User> users;
 	
 	private String error;
 	private String message;
+	
+	public UserWrapper(Long userId) {
+		this.userId = userId;
+	}
+	
+	public UserWrapper() {
+	}
 
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 	public User getUser() {
 		return user;
 	}

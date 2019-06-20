@@ -1,7 +1,5 @@
 package br.com.tcc.user.microservice.helper.impl;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -28,31 +26,25 @@ public class RequestHelperImpl implements IRequestHelper<UserWrapper, User> {
 		this.restTemplate = restTemplate;
 	}
 	
-	private HttpHeaders getHeaders(Map<String, String> headers) {
-		
+	private HttpHeaders getHeaders(MediaType mediaType, String apikey) {
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
-		
-		if(headers != null) {
-			headers.entrySet().forEach( e -> {
-				httpHeaders.add(e.getKey(), e.getValue());
-			});
-		}
-
+		httpHeaders.setContentType(mediaType);
+		httpHeaders.add("api-key", apikey);
 		return httpHeaders;
 	}
 		
 	@Override
-	public ResponseEntity<UserWrapper> doRequestDefault(String url, HttpMethod method, User body, Map<String, String> headers) {
+	public ResponseEntity<UserWrapper> doRequestDefault(String url, HttpMethod method, User body, HttpHeaders httpHeaders) {
 		
-		HttpHeaders httpHeaders = getHeaders(headers);		
 		MultiValueMap<String, Object> map = null;
 		
 		if(body != null) {
 			map = new LinkedMultiValueMap<>();
 			map.add("login", body.getLogin());
 			map.add("password", body.getPassword());
-			map.set("photo", body.getPhoto().getResource());
+			if(body.getDocument() != null) {
+				map.set("document", body.getDocument().getResource());				
+			}
 		}
 		
 		HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(map, httpHeaders);
@@ -63,69 +55,42 @@ public class RequestHelperImpl implements IRequestHelper<UserWrapper, User> {
 	}
 	
 	@Override
-	public ResponseEntity<UserWrapper> doRequestDefault(String url, HttpMethod method) {
-		return doRequestDefault(url, method, null, null);
+	public ResponseEntity<UserWrapper> doRequestDefault(String url, HttpMethod method, User body, String apikey) {
+		return doRequestDefault(url, method, body,  getHeaders(MediaType.APPLICATION_JSON, apikey));
 	}
 	
 	@Override
-	public ResponseEntity<UserWrapper> doGet(String url) {
-		return this.doRequestDefault(url, HttpMethod.GET);		
+	public ResponseEntity<UserWrapper> doGet(String url, String apikey) {
+		return this.doRequestDefault(url, HttpMethod.GET, null, getHeaders(MediaType.APPLICATION_JSON, apikey));		
+	}
+
+	@Override
+	public ResponseEntity<UserWrapper> doPost(String url, User body, String apikey) {
+		return this.doRequestDefault(url, HttpMethod.POST, body, getHeaders(MediaType.MULTIPART_FORM_DATA, apikey));
 	}
 	
 	@Override
-	public ResponseEntity<UserWrapper> doGet(String url, Map<String, String> headers) {
-		return this.doRequestDefault(url, HttpMethod.GET);		
+	public ResponseEntity<UserWrapper> doPut(String url, User body, String apikey) {
+		return this.doRequestDefault(url, HttpMethod.PUT, body,  getHeaders(MediaType.MULTIPART_FORM_DATA, apikey));
+	}
+			
+	@Override
+	public ResponseEntity<UserWrapper> doDelete(String url, String apikey) {
+		return this.doRequestDefault(url, HttpMethod.DELETE,  null, getHeaders(MediaType.APPLICATION_JSON, apikey));
 	}
 	
+
 	@Override
-	public ResponseEntity<UserWrapper> doPost(String url, User body) {
-		return this.doRequestDefault(url, HttpMethod.POST, body, null);
+	public ResponseEntity<byte[]> doGetBinary(String url, String apikey) {
+		return doRequestDefaultBinary(url, HttpMethod.GET, getHeaders(MediaType.APPLICATION_JSON, apikey));
 	}
-	
+
 	@Override
-	public ResponseEntity<UserWrapper> doPost(String url, User body, Map<String, String> headers) {
-		return this.doRequestDefault(url, HttpMethod.POST, body, headers);
-	}
-	
-	@Override
-	public ResponseEntity<UserWrapper> doPut(String url, User body) {
-		return this.doRequestDefault(url, HttpMethod.PUT, body, null);
-	}
-	
-	@Override
-	public ResponseEntity<UserWrapper> doPut(String url, User body, Map<String, String> headers) {
-		return this.doRequestDefault(url, HttpMethod.PUT, body, headers);
-	}
+	public ResponseEntity<byte[]> doRequestDefaultBinary(String url, HttpMethod method, HttpHeaders getHeaders) {
 		
-	@Override
-	public ResponseEntity<UserWrapper> doDelete(String url) {
-		return this.doRequestDefault(url, HttpMethod.DELETE);
-	}
-	
-	@Override
-	public ResponseEntity<UserWrapper> doDelete(String url, Map<String, String> headers) {
-		return this.doRequestDefault(url, HttpMethod.DELETE, null, headers);
-	}
-
-	@Override
-	public ResponseEntity<byte[]> doGetBinary(String url) {
-		return doRequestDefaultBinary(url, HttpMethod.GET, null);
-	}
-
-	@Override
-	public ResponseEntity<byte[]> doGetBinary(String url, Map<String, String> headers) {
-		return doRequestDefaultBinary(url, HttpMethod.GET, headers);
-	}
-
-	@Override
-	public ResponseEntity<byte[]> doRequestDefaultBinary(String url, HttpMethod method, Map<String, String> headers) {
-		HttpHeaders httpHeaders = getHeaders(headers);		
-		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-		
-		HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(map, httpHeaders);
+		HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(getHeaders);
 		ResponseEntity<byte[]> response = restTemplate
-				                       .exchange(url, method, entity, byte[].class);
-
+				                         .exchange(url, method, entity, byte[].class);
 		return response;
 	}
 

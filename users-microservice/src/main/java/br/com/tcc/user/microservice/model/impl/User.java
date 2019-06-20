@@ -24,7 +24,7 @@ public class User implements IBaseTO<Long> {
 	
 	private String idPhoto;
 	
-	private MultipartFile photo;
+	private MultipartFile document;
 	
 	private String base64Photo;
 
@@ -54,12 +54,12 @@ public class User implements IBaseTO<Long> {
 		this.password = password;
 	}
 
-	public MultipartFile getPhoto() {
-		return photo;
+	public MultipartFile getDocument() {
+		return document;
 	}
 
-	public void setPhoto(MultipartFile photo) {
-		this.photo = photo;
+	public void setDocument(MultipartFile document) {
+		this.document = document;
 	}
 
 	public String getIdPhoto() {

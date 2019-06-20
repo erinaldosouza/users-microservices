@@ -36,7 +36,8 @@ public class UserController {
 	}
 	
 	@PostMapping(value="/")
-	public  ResponseEntity<UserWrapper> save(@RequestBody(required=true) @Valid User user) throws IOException {
+	public  ResponseEntity<UserWrapper> save(@RequestPart(name="document", required=false) MultipartFile document,  @Valid User user) throws IOException {
+		user.setDocument(document);
 		return this.userService.save(user);		
 	}
 	
@@ -51,15 +52,14 @@ public class UserController {
 	}
 	
 	@PutMapping(value="/{id}")
-	public ResponseEntity<UserWrapper> update(@PathVariable(name="id", required=true) Long id, @RequestPart("photo") MultipartFile photo,  @Valid User user) {
+	public ResponseEntity<UserWrapper> update(@PathVariable(name="id", required=true) Long id, @RequestPart(name="document", required=false) MultipartFile document,  @Valid User user) {
 		user.setId(id);
-		user.setPhoto(photo);
+		user.setDocument(document);
 		return this.userService.update(user);
 	} 
 	
 	@DeleteMapping(value="/{id}")
-	public  ResponseEntity<String> delete(@PathVariable(name="id", required=true) Long id) {
-		this.userService.delete(id);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<UserWrapper> delete(@PathVariable(name="id", required=true) Long id) {
+		return this.userService.delete(id);
 	}
 }
