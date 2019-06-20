@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.com.tcc.user.microservice.business.UserService;
 import br.com.tcc.user.microservice.model.impl.User;
@@ -33,14 +36,12 @@ public class UserController {
 	}
 	
 	@PostMapping(value="/")
-	public  ResponseEntity<UserWrapper> save(@Valid User user) throws IOException {
-		System.out.println("Post request to /save: " + user);
+	public  ResponseEntity<UserWrapper> save(@RequestBody(required=true) @Valid User user) throws IOException {
 		return this.userService.save(user);		
 	}
 	
 	@GetMapping(value="/{id}")
-	public ResponseEntity<UserWrapper> find(@PathVariable(value="id", required=true) Long id) {
-		System.out.println("Get request to id: " + id);
+	public ResponseEntity<UserWrapper> find(@PathVariable(name="id", required=true) Long id) {
 		return this.userService.find(id);
     }
 	
@@ -50,15 +51,14 @@ public class UserController {
 	}
 	
 	@PutMapping(value="/{id}")
-	public ResponseEntity<UserWrapper> update(@PathVariable(value="id", required=true) Long id, @Valid User user) {
+	public ResponseEntity<UserWrapper> update(@PathVariable(name="id", required=true) Long id, @RequestPart("photo") MultipartFile photo,  @Valid User user) {
 		user.setId(id);
-		System.out.println("Put request with id: " + id + " and body: " + user);
+		user.setPhoto(photo);
 		return this.userService.update(user);
 	} 
 	
 	@DeleteMapping(value="/{id}")
-	public  ResponseEntity<String> delete(@PathVariable(value="id", required=true) Long id) {
-		System.out.println("Detele request with id: " + id);
+	public  ResponseEntity<String> delete(@PathVariable(name="id", required=true) Long id) {
 		this.userService.delete(id);
 		return ResponseEntity.ok().build();
 	}

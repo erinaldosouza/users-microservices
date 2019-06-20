@@ -15,10 +15,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import br.com.tcc.user.microservice.helper.IRequestHelper;
+import br.com.tcc.user.microservice.model.impl.User;
 import br.com.tcc.user.microservice.wrapper.UserWrapper;
 
 @Component
-public class RequestHelperImpl implements IRequestHelper<UserWrapper> {
+public class RequestHelperImpl implements IRequestHelper<UserWrapper, User> {
 	
 	private final RestTemplate restTemplate;
 	
@@ -42,15 +43,16 @@ public class RequestHelperImpl implements IRequestHelper<UserWrapper> {
 	}
 		
 	@Override
-	public ResponseEntity<UserWrapper> doRequestDefault(String url, HttpMethod method, Map<String, Object> body, Map<String, String> headers) {
+	public ResponseEntity<UserWrapper> doRequestDefault(String url, HttpMethod method, User body, Map<String, String> headers) {
 		
 		HttpHeaders httpHeaders = getHeaders(headers);		
-		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+		MultiValueMap<String, Object> map = null;
 		
 		if(body != null) {
-			body.entrySet().forEach(e -> {
-				map.add(e.getKey(),  e.getValue());
-			});
+			map = new LinkedMultiValueMap<>();
+			map.add("login", body.getLogin());
+			map.add("password", body.getPassword());
+			map.set("photo", body.getPhoto().getResource());
 		}
 		
 		HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(map, httpHeaders);
@@ -76,22 +78,22 @@ public class RequestHelperImpl implements IRequestHelper<UserWrapper> {
 	}
 	
 	@Override
-	public ResponseEntity<UserWrapper> doPost(String url, Map<String, Object> body) {
+	public ResponseEntity<UserWrapper> doPost(String url, User body) {
 		return this.doRequestDefault(url, HttpMethod.POST, body, null);
 	}
 	
 	@Override
-	public ResponseEntity<UserWrapper> doPost(String url, Map<String, Object> body, Map<String, String> headers) {
+	public ResponseEntity<UserWrapper> doPost(String url, User body, Map<String, String> headers) {
 		return this.doRequestDefault(url, HttpMethod.POST, body, headers);
 	}
 	
 	@Override
-	public ResponseEntity<UserWrapper> doPut(String url, Map<String, Object> body) {
+	public ResponseEntity<UserWrapper> doPut(String url, User body) {
 		return this.doRequestDefault(url, HttpMethod.PUT, body, null);
 	}
 	
 	@Override
-	public ResponseEntity<UserWrapper> doPut(String url, Map<String, Object> body, Map<String, String> headers) {
+	public ResponseEntity<UserWrapper> doPut(String url, User body, Map<String, String> headers) {
 		return this.doRequestDefault(url, HttpMethod.PUT, body, headers);
 	}
 		
