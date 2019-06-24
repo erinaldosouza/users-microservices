@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,4 +61,9 @@ public class UserController {
 	public ResponseEntity<UserWrapper> delete(@PathVariable(name="id", required=true) Long id) {
 		return this.userService.delete(id);
 	}
+	
+	@GetMapping(value="api/user/version")
+	public ResponseEntity<String> find() {
+		return ResponseEntity.ok("1.0.beta");
+    }
 }
