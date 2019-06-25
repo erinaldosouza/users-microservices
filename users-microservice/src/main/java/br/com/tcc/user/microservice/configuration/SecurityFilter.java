@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,10 +49,13 @@ public class SecurityFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
 		
+		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) res;
+		
 		try {
+
 			InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(authorizer, Boolean.FALSE);
 			
-			HttpServletRequest request = (HttpServletRequest) req;
 			HttpHeaders httpHeaders = getHeaders(request);
 			HttpEntity<String> entity = new HttpEntity<>("heades", httpHeaders);		
 			
@@ -63,18 +67,21 @@ public class SecurityFilter implements Filter {
 				chain.doFilter(req, res);
 			
 			} else {
+				response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		        response.setHeader("WWW-Authenticate", "BASIC realm=\"Your realm\"");
 				res.getWriter().append("{\"message\": \"" + authorizerResponseTO.getMessage() + "\"}");
 			}
 			
 		} catch (RestClientException e) {
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			res.getWriter().append("{\"message\": \"not authorized\", \"error\":" + e.getMessage() + "\"}");
 			e.printStackTrace();
 		
 		} catch (Exception e) {
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			res.getWriter().append("{\"message\": \"not authorized\", \"error\":" + e.getMessage() + "\"}");
 			e.printStackTrace();
 		}
-		
 		
 	}
 
@@ -88,4 +95,5 @@ public class SecurityFilter implements Filter {
 
 		return httpHeaders;
 	}
+
 }
