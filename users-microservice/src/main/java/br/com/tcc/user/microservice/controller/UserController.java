@@ -34,30 +34,30 @@ public class UserController {
 		this.userService = userService;
 	}
 	
-	@PostMapping(value="/")
+	@PostMapping(value="/user")
 	public  ResponseEntity<UserWrapper> save(@RequestPart(name="document", required=false) MultipartFile document,  @Valid User user) throws IOException {
 		user.setDocument(document);
 		return this.userService.save(user);		
 	}
 	
-	@GetMapping(value="/{id}")
+	@GetMapping(value="/user/{id}")
 	public ResponseEntity<UserWrapper> find(@PathVariable(name="id", required=true) Long id) {
 		return this.userService.find(id);
     }
 	
-	@GetMapping(value="/")
+	@GetMapping(value="/user")
 	public ResponseEntity<UserWrapper> findAll() {
 		 return this.userService.findAll();
 	}
 	
-	@PutMapping(value="/{id}")
+	@PutMapping(value="/user/{id}")
 	public ResponseEntity<UserWrapper> update(@PathVariable(name="id", required=true) Long id, @RequestPart(name="document", required=false) MultipartFile document,  @Valid User user) {
 		user.setId(id);
 		user.setDocument(document);
 		return this.userService.update(user);
 	} 
 	
-	@DeleteMapping(value="/{id}")
+	@DeleteMapping(value="/user/{id}")
 	public ResponseEntity<UserWrapper> delete(@PathVariable(name="id", required=true) Long id) {
 		return this.userService.delete(id);
 	}

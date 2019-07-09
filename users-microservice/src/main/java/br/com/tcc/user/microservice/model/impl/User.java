@@ -17,12 +17,18 @@ public class User implements IBaseTO<Long> {
 	private Long id;
 	
 	@NotBlank
+	private String name;
+	
+	@NotBlank
+	private String lastName;
+	
+	@NotBlank
 	private String login;
 	
 	@NotBlank
-	private String password;
+	private String password;	
 	
-	private String idPhoto;
+	private String documentId;
 	
 	private MultipartFile document;
 	
@@ -62,19 +68,35 @@ public class User implements IBaseTO<Long> {
 		this.document = document;
 	}
 
-	public String getIdPhoto() {
-		return idPhoto;
-	}
-
-	public void setIdPhoto(String idPhoto) {
-		this.idPhoto = idPhoto;
-	}
-
 	public String getBase64Photo() {
 		return base64Photo;
 	}
 
 	public void setBase64Photo(String base64Photo) {
 		this.base64Photo = base64Photo;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getDocumentId() {
+		return documentId;
+	}
+
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
 	}
 }
