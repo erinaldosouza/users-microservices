@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<UserWrapper> save(User user) {
 
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);		
-		return requestHelper.doPost(instanceInfo.getHomePageUrl(), user, instanceInfo.getMetadata().get(apikeyname));		
+		return requestHelper.doPost(instanceInfo.getHomePageUrl() + "v1", user, instanceInfo.getMetadata().get(apikeyname));		
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<UserWrapper> find(Serializable id) {
 
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doGet(instanceInfo.getHomePageUrl() + id, instanceInfo.getMetadata().get(apikeyname));		
+		return requestHelper.doGet(instanceInfo.getHomePageUrl() + "v1/" + id, instanceInfo.getMetadata().get(apikeyname));		
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<UserWrapper> findAll() {
 
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doGet(instanceInfo.getHomePageUrl(), instanceInfo.getMetadata().get(apikeyname));
+		return requestHelper.doGet(instanceInfo.getHomePageUrl() + "v1", instanceInfo.getMetadata().get(apikeyname));
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<UserWrapper> update(User user) {
 
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doPut(instanceInfo.getHomePageUrl() + user.getId(), user, instanceInfo.getMetadata().get(apikeyname));
+		return requestHelper.doPut(instanceInfo.getHomePageUrl() + "v1/" + user.getId(), user, instanceInfo.getMetadata().get(apikeyname));
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<UserWrapper> delete(Serializable id) {
 
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doDelete(instanceInfo.getHomePageUrl() + id, instanceInfo.getMetadata().get(apikeyname));		
+		return requestHelper.doDelete(instanceInfo.getHomePageUrl() + "v1/" +id, instanceInfo.getMetadata().get(apikeyname));		
 	}
 	
 	public ResponseEntity<UserWrapper> fallback(Throwable exception) {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ import br.com.tcc.user.microservice.wrapper.UserWrapper;
 
 //TODO change the System.out.println for a logger;
 @RestController
+@RequestMapping(value="api/user")
 public class UserController {
 	
 	private final UserService userService;	
@@ -34,35 +36,35 @@ public class UserController {
 		this.userService = userService;
 	}
 	
-	@PostMapping(value="/user")
+	@PostMapping(value="v1")
 	public  ResponseEntity<UserWrapper> save(@RequestPart(name="document", required=false) MultipartFile document,  @Valid User user) throws IOException {
 		user.setDocument(document);
 		return this.userService.save(user);		
 	}
 	
-	@GetMapping(value="/user/{id}")
+	@GetMapping(value="v1/{id}")
 	public ResponseEntity<UserWrapper> find(@PathVariable(name="id", required=true) Long id) {
 		return this.userService.find(id);
     }
 	
-	@GetMapping(value="/user")
+	@GetMapping(value="v1")
 	public ResponseEntity<UserWrapper> findAll() {
 		 return this.userService.findAll();
 	}
 	
-	@PutMapping(value="/user/{id}")
+	@PutMapping(value="v1/{id}")
 	public ResponseEntity<UserWrapper> update(@PathVariable(name="id", required=true) Long id, @RequestPart(name="document", required=false) MultipartFile document,  @Valid User user) {
 		user.setId(id);
 		user.setDocument(document);
 		return this.userService.update(user);
 	} 
 	
-	@DeleteMapping(value="/user/{id}")
+	@DeleteMapping(value="v1/{id}")
 	public ResponseEntity<UserWrapper> delete(@PathVariable(name="id", required=true) Long id) {
 		return this.userService.delete(id);
 	}
 	
-	@GetMapping(value="api/user/version")
+	@GetMapping(value="version")
 	public ResponseEntity<String> find() {
 		return ResponseEntity.ok("1.0.beta");
     }
