@@ -42,6 +42,8 @@ public class RequestHelperImpl implements IRequestHelper<UserWrapper, User> {
 			map = new LinkedMultiValueMap<>();
 			map.add("login", body.getLogin());
 			map.add("password", body.getPassword());
+			map.add("name", body.getName());
+			map.add("lastName", body.getLastName());
 			if(body.getDocument() != null) {
 				map.set("document", body.getDocument().getResource());				
 			}
