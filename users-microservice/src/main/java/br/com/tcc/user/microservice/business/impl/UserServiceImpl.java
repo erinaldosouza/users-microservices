@@ -11,7 +11,6 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import br.com.tcc.user.microservice.business.UserService;
 import br.com.tcc.user.microservice.helper.IRequestHelper;
@@ -27,6 +26,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Value("${application.services.apikey.name}")
 	private String apikeyname;
+	
+	@Value("${document.persistence.service}")
+	private String userDocumentPersistenceService;
 		
 	private final EurekaClient eurekaClient;		
 	private final IRequestHelper<UserWrapper, User> requestHelper;
@@ -50,14 +52,27 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<UserWrapper> find(Serializable id) {
 
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);
-		return requestHelper.doGet(instanceInfo.getHomePageUrl() + "v1/" + id, instanceInfo.getMetadata().get(apikeyname));		
+		UserWrapper userWrapper= requestHelper.doGet(instanceInfo.getHomePageUrl() + "v1/" + id, instanceInfo.getMetadata().get(apikeyname)).getBody();
+		User user = userWrapper.getUser();
+		
+		if (user != null && user.getDocumentId() != null) {
+			instanceInfo = this.eurekaClient.getNextServerFromEureka(userDocumentPersistenceService, Boolean.FALSE);
+			String image = requestHelper.doGetBinary(instanceInfo
+					                    .getHomePageUrl() + "img/" + user.getDocumentId(), instanceInfo.getMetadata()
+					                    .get(apikeyname)).getBody().toString();
+			
+			user.setBase64Image(image);
+
+		}
+		
+		return 	ResponseEntity.ok(userWrapper);
 	}
 
 	@Override
-	@HystrixCommand
+	/*@HystrixCommand
 	(commandProperties = {
 		@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "60000")
-	})
+	})*/
 	public ResponseEntity<UserWrapper> findAll() {
 
 		InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(userPersistenceService, Boolean.FALSE);

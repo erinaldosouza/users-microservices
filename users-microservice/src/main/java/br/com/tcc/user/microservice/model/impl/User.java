@@ -26,13 +26,15 @@ public class User implements IBaseTO<Long> {
 	private String login;
 	
 	@NotBlank
-	private String password;	
+	private String password;
+	
+	private byte[] bytes;
 	
 	private String documentId;
 	
 	private MultipartFile document;
 	
-	private String base64Photo;
+	private String base64Image;
 
 	@Override
 	public Long getId() {
@@ -68,14 +70,6 @@ public class User implements IBaseTO<Long> {
 		this.document = document;
 	}
 
-	public String getBase64Photo() {
-		return base64Photo;
-	}
-
-	public void setBase64Photo(String base64Photo) {
-		this.base64Photo = base64Photo;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -98,5 +92,21 @@ public class User implements IBaseTO<Long> {
 
 	public void setDocumentId(String documentId) {
 		this.documentId = documentId;
+	}
+
+	public byte[] getBytes() {
+		return bytes;
+	}
+
+	public void setBytes(byte[] bytes) {
+		this.bytes = bytes;
+	}
+
+	public String getBase64Image() {
+		return base64Image;
+	}
+
+	public void setBase64Image(String base64Image) {
+		this.base64Image = base64Image;
 	}
 }

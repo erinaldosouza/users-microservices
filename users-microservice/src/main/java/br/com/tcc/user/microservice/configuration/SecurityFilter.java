@@ -57,19 +57,21 @@ public class SecurityFilter implements Filter {
 			InstanceInfo instanceInfo = this.eurekaClient.getNextServerFromEureka(authorizer, Boolean.FALSE);
 			
 			HttpHeaders httpHeaders = getHeaders(request);
-			HttpEntity<String> entity = new HttpEntity<>("heades", httpHeaders);		
+			HttpEntity<String> entity = new HttpEntity<>("heades", httpHeaders);	
 			
 			ResponseEntity<AuthorizerResponseTO> responseEntity = this.restTemplate.exchange(instanceInfo.getHomePageUrl(), HttpMethod.GET, entity, AuthorizerResponseTO.class);
 			AuthorizerResponseTO authorizerResponseTO = responseEntity.getBody();
 			res.setContentType(MediaType.APPLICATION_JSON_VALUE);
 			
-			if(HttpStatus.OK.value() == authorizerResponseTO.getRequestStatus()) {
-				chain.doFilter(req, res);
-			
-			} else {
-				response.setStatus(HttpStatus.UNAUTHORIZED.value());
-		        response.setHeader("WWW-Authenticate", "BASIC realm=\"Your realm\"");
-				res.getWriter().append("{\"message\": \"" + authorizerResponseTO.getMessage() + "\"}");
+			if (authorizerResponseTO != null) { 
+				if(HttpStatus.OK.value() == authorizerResponseTO.getRequestStatus()) {
+					chain.doFilter(req, res);
+				
+				} else {
+					response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			        response.setHeader("WWW-Authenticate", "BASIC realm=\"Your realm\"");
+					res.getWriter().append("{\"message\": \"" + authorizerResponseTO.getMessage() + "\"}");
+				}
 			}
 			
 		} catch (RestClientException e) {

@@ -83,16 +83,16 @@ public class RequestHelperImpl implements IRequestHelper<UserWrapper, User> {
 	
 
 	@Override
-	public ResponseEntity<byte[]> doGetBinary(String url, String apikey) {
+	public ResponseEntity<?> doGetBinary(String url, String apikey) {
 		return doRequestDefaultBinary(url, HttpMethod.GET, getHeaders(MediaType.APPLICATION_JSON, apikey));
 	}
 
 	@Override
-	public ResponseEntity<byte[]> doRequestDefaultBinary(String url, HttpMethod method, HttpHeaders getHeaders) {
+	public ResponseEntity<?> doRequestDefaultBinary(String url, HttpMethod method, HttpHeaders getHeaders) {
 		
 		HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(getHeaders);
-		ResponseEntity<byte[]> response = restTemplate
-				                         .exchange(url, method, entity, byte[].class);
+		ResponseEntity<?> response = restTemplate
+				                         .exchange(url, method, entity, String.class);
 		return response;
 	}
 
