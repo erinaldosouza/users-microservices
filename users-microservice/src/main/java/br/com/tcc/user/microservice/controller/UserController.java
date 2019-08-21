@@ -23,7 +23,7 @@ import br.com.tcc.user.microservice.wrapper.UserWrapper;
 
 //TODO change the System.out.println for a logger;
 @RestController
-@RequestMapping(value="api/user")
+@RequestMapping(value="api-user/v1")
 public class UserController {
 	
 	private final UserService userService;	
@@ -36,30 +36,30 @@ public class UserController {
 		this.userService = userService;
 	}
 	
-	@PostMapping(value="v1")
+	@PostMapping
 	public  ResponseEntity<UserWrapper> save(@RequestPart(name="document", required=false) MultipartFile document,  @Valid User user) throws IOException {
 		user.setDocument(document);
 		return this.userService.save(user);		
 	}
 	
-	@GetMapping(value="v1/{id}")
+	@GetMapping(value="{id}")
 	public ResponseEntity<UserWrapper> find(@PathVariable(name="id", required=true) Long id) {
 		return this.userService.find(id);
     }
 	
-	@GetMapping(value="v1")
+	@GetMapping
 	public ResponseEntity<UserWrapper> findAll() {
 		 return this.userService.findAll();
 	}
 	
-	@PutMapping(value="v1/{id}")
+	@PutMapping(value="{id}")
 	public ResponseEntity<UserWrapper> update(@PathVariable(name="id", required=true) Long id, @RequestPart(name="document", required=false) MultipartFile document,  @Valid User user) {
 		user.setId(id);
 		user.setDocument(document);
 		return this.userService.update(user);
 	} 
 	
-	@DeleteMapping(value="v1/{id}")
+	@DeleteMapping(value="{id}")
 	public ResponseEntity<UserWrapper> delete(@PathVariable(name="id", required=true) Long id) {
 		return this.userService.delete(id);
 	}
